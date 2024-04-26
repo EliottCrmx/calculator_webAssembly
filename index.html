@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculatrice WebAssembly</title>
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f7f7f7;
+        }
+    
+        .calculator {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 220px;
+        }
+    
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: right;
+        }
+    
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+    
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #2089dc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+    
+        button:hover {
+            background-color: #106ba3;
+        }
+    
+        #result {
+            font-size: 24px;
+            color: #333;
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: right;
+        }
+    </style>
+    
+    
+</head>
+<body>
+    <div class="calculator">
+        <input id="input" type="text" placeholder="Entrez l'expression">
+        <div class="button-grid">
+            <button onclick="insert('1')">1</button>
+            <button onclick="insert('2')">2</button>
+            <button onclick="insert('3')">3</button>
+            <button onclick="insert('+')">+</button>
+            <button onclick="insert('4')">4</button>
+            <button onclick="insert('5')">5</button>
+            <button onclick="insert('6')">6</button>
+            <button onclick="insert('-')">-</button>
+            <button onclick="insert('7')">7</button>
+            <button onclick="insert('8')">8</button>
+            <button onclick="insert('9')">9</button>
+            <button onclick="insert('*')">*</button>
+            <button onclick="insert('0')">0</button>
+            <button onclick="insert('.')">.</button>
+            <button onclick="insert('**')">^</button>
+            <button onclick="insertFunction('Math.sqrt()')">√</button>
+            <button onclick="evaluateExpression()">=</button>
+            <button onclick="insert('/')">/</button>
+            <button onclick="insert('(')">(</button>
+            <button onclick="insert(')')">)</button>
+            <button onclick="clearInput()">C</button>
+        </div>
+    </div>
+    
+    
+    
+    
+    
+    <script src="calculator.js"></script>
+    <script>
+        function insert(value, cursorAdjustment = 0) {
+            const input = document.getElementById('input');
+            const cursorPos = input.selectionStart;
+            const textBefore = input.value.substring(0, cursorPos);
+            const textAfter = input.value.substring(cursorPos, input.value.length);
+            input.value = textBefore + value + textAfter;
+            // Ajuste la position du curseur après insertion, surtout utile pour sqrt()
+            input.focus();
+            input.setSelectionRange(cursorPos + value.length + cursorAdjustment, cursorPos + value.length + cursorAdjustment);
+        }
+    
+        function insertFunction(funcTemplate) {
+            // Insère des fonctions avec une gestion spécifique du curseur
+            insert(funcTemplate, -1); // Déplace le curseur à l'intérieur des parenthèses
+        }
+    
+        function evaluateExpression() {
+            const input = document.getElementById('input');
+            try {
+                const result = eval(input.value);
+                input.value = result.toFixed(2); // Affiche le résultat arrondi dans l'input
+            } catch (error) {
+                input.value = 'Erreur';
+            }
+        }
+    
+        function clearInput() {
+            document.getElementById('input').value = ''; // Efface le champ de saisie
+        }
+    
+        // Gestion de la touche Entrée pour déclencher le calcul
+        document.getElementById('input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Empêche tout comportement par défaut
+                evaluateExpression();
+            }
+        });
+    </script>
+    
+    
+    
+    
+</body>
+</html>
